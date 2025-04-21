@@ -2,142 +2,64 @@
 My Data Engineering Zoomcamp Homework 2 Solutions (using 2022 version with airflow as orchestration tool) 
 
 **Question 1.**
+Start date for the Yellow taxi data (1 point)
+You'll need to parametrize the DAG for processing the yellow taxi data that we created in the videos.
+
+What should be the start date for this dag?
+
+2019-01-01
+2020-01-01
+2021-01-01
+days_ago(1)
+
 
 **Answer:**
-GitBash commands
-```bash
-$ docker run -it python:3.12.8 bash
-root@7c1f376a6587:/# pip --version
-pip 24.3.1 from /usr/local/lib/python3.12/site-packages/pip (python 3.12)
-root@7c1f376a6587:/#
+- 2019-01-01
+- 
 ```
-
-- 24.3.1
-
+yellow_taxi_data_dag = DAG(
+    dag_id = "yellow_taxi_data_v2",
+    schedule_interval = "0 6 2 * *",
+    start_date = datetime(2019, 1, 1),
+    default_args=default_args,
+    catchup = True,
+    max_active_runs = 2,
+    tags = ["dte-de"]
+)
+```
 
 **Qustion 2.**
+Frequency for the Yellow taxi data (1 point)
+How often do we need to run this DAG?
 
-Given the following docker-compose.yaml, what is the hostname and port that pgadmin should use to connect to the postgres database?
-```bash
-services:
-  db:
-    container_name: postgres
-    image: postgres:17-alpine
-    environment:
-      POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: 'postgres'
-      POSTGRES_DB: 'ny_taxi'
-    ports:
-      - '5433:5432'
-    volumes:
-      - vol-pgdata:/var/lib/postgresql/data
-
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4:latest
-    environment:
-      PGADMIN_DEFAULT_EMAIL: "pgadmin@pgadmin.com"
-      PGADMIN_DEFAULT_PASSWORD: "pgadmin"
-    ports:
-      - "8080:80"
-    volumes:
-      - vol-pgadmin_data:/var/lib/pgadmin  
-
-volumes:
-  vol-pgdata:
-    name: vol-pgdata
-  vol-pgadmin_data:
-    name: vol-pgadmin_data
-```
+Daily
+Monthly
+Yearly
+Once
 
 **Answer:**
-- db:5432
+- monthly
+ schedule_interval = "0 6 2 * *". Translates to 6:00am, on the second day of the month, of any day of the week, and every month.
 
-**Prepare Postgres:**
 
 
-```bash
-#"Use Docker Compose file from above to set up the environment and run postgres."
-docker compose up -d 
+**Question 3.***
+DAG for FHV Data (2 points)
+Now create another DAG - for uploading the FHV data.
 
-#Ingest green taxi data and create table named green_taxi_trips in postrgesql using ingest_data_1.py python script (check python file for script).
+We will need three steps:
 
-URL="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/green/green_tripdata_2019-10.csv.gz"
+Download the data
+Parquetize it
+Upload to GCS
+If you don't have a GCP account, for local ingestion you'll need two steps:
 
-python ingest_data_1.py \
-    --user=postgres \
-    --password=postgres \
-    --host=localhost \
-    --port=5433 \
-    --db=ny_taxi \
-    --table_name=green_taxi_trips \
-    --url=${URL}
+Download the data
+Ingest to Postgres
+Use the same frequency and the start date as for the yellow taxi dataset
 
-#Ingest taxi zone data and create table named taxi_zone is postgresql using ingest_data_1.py python script.
-
-URL="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/misc/taxi_zone_lookup.csv"
-
-python ingest_data_1.py \
-    --user=postgres \
-    --password=postgres \
-    --host=localhost \
-    --port=5433 \
-    --db=ny_taxi \
-    --table_name=taxi_zone \
-    --url=${URL}
-```
-**Question 3. Trip Segmentation Count**
-During the period of October 1st 2019 (inclusive) and November 1st 2019 (exclusive), how many trips, respectively, happened:
-Up to 1 mile
-In between 1 (exclusive) and 3 miles (inclusive),
-In between 3 (exclusive) and 7 miles (inclusive),
-In between 7 (exclusive) and 10 miles (inclusive),
-Over 10 miles
-
+Question: how many DAG runs are green for data in 2019 after finishing everything?
 **Answer**
-
-```sql
-SELECT
-	SUM(CASE WHEN trip_distance <=1 THEN 1 ELSE 0 END) as num_up_to_1,
-	SUM(CASE WHEN trip_distance >1 and trip_distance <=3 THEN 1 ELSE 0 END) as num_trips_between_1_3,
-	SUM(CASE WHEN trip_distance >3 and trip_distance <=7 THEN 1 ELSE 0 END) as num_trips_between_3_7, 
-	SUM(CASE WHEN trip_distance >7 and trip_distance <=10 THEN 1 ELSE 0 END) as num_trips_between_7_10, 
-	SUM(CASE WHEN trip_distance >10 THEN 1 ELSE 0 END) as num_trips_over_10
-FROM
-	green_taxi_trips
-WHERE 
-    lpep_pickup_datetime >= '2019-10-01'
-    and lpep_pickup_datetime < '2019-11-01'
-    and lpep_dropoff_datetime >= '2019-10-01'
-    and lpep_dropoff_datetime < '2019-11-01'
-;
-```
-![image](https://github.com/user-attachments/assets/0f943858-eaaa-4ab9-a851-bb1589a65f51)
-
-
-**Answer #2**
-```sql
-SELECT
-CASE
-	WHEN trip_distance <=1 THEN 'up to 1 mile'
-	WHEN trip_distance >1 AND trip_distance <= 3 THEN 'between 1 and 3 miles'
-	WHEN trip_distance >3 AND trip_distance <= 7 THEN 'between 3 and 7 miles'	
-	WHEN trip_distance >7 AND trip_distance <= 10 THEN 'between 7 and 10 miles'	
-	WHEN trip_distance >10 THEN 'over 10 miles'
-END as segment,
-to_char(COUNT(*), '999,999') AS num_trips
-FROM
-	green_taxi_trips
-WHERE 
-    lpep_pickup_datetime >= '2019-10-01'
-    and lpep_pickup_datetime < '2019-11-01'
-    and lpep_dropoff_datetime >= '2019-10-01'
-    and lpep_dropoff_datetime < '2019-11-01'
-GROUP BY segment
-;
-```
-![image](https://github.com/user-attachments/assets/7eb8182a-b6fd-42ca-8670-1953f9b07320)
-
 
 **Question 4. Longest trip for each day**
 Which was the pick up day with the longest trip distance? Use the pick up time for your calculations.
