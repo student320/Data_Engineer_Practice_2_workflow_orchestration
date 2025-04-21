@@ -104,3 +104,7 @@ zones_data_dag = DAG(
     tags = ["dte-de"]
 )
 ```
+
+**Screenhsots to show all files were successfully uploaded to Google Cloud Storage Buckets!**  
+
+![image](https://github.com/user-attachments/assets/639bb7fa-2190-4f0e-9d8b-729afe1ac650)
