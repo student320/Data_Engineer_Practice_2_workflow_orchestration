@@ -86,9 +86,9 @@ Upload to GCS
 
 How often does it need to run?
 
-Daily
-Monthly
-Yearly
+Daily  
+Monthly  
+Yearly  
 Once
 
 **Answer**
