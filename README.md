@@ -104,9 +104,11 @@ zones_data_dag = DAG(
     tags = ["dte-de"]
 )
 ```
-**Appendix**
+**Appendix:**  
 The dags_ingestion_gcs_dag.py script contains all the dags used to download files from source, decompress files, format .csv files into .parquet files, and move files from local files system to Google Cloud Storage Bucket.  
-A DAG for creating an external table in BigQuery is also included but not used because the homework page states not to use this part for the solution.
+
+Note: A DAG for creating an external table in BigQuery is also included but not used because the homework page states not to use this part for the solution.  
+
 **Screenhsot to show all files were successfully uploaded to Google Cloud Storage Bucket!**  
 
 ![image](https://github.com/user-attachments/assets/639bb7fa-2190-4f0e-9d8b-729afe1ac650)
