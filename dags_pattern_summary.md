@@ -1,18 +1,3 @@
-# DOCUMENT YOUR BIGGEST PROBLEMS (WHAT). (WHY) YOU RAN INTO THEM AND (HOW) YOU SOLVED THEM!!!
-# - How to connect airflow to gcloud?
-#    -
-# - What is purpose of external table?
-#    -
-# - What is bucket?
-#    -
-# - How to handle compressed gzip files?
-#    -
-# - Where do enviroment variables come from? 
-#    - terraform + bash > docker-compose file > script
-
-# DOCUMENT POTENTIAL IMPOREVEMENTS (WHAT) . WHY SHOULD YOU DO THEM, AND HOW YOU COULD DO THEM
-
-
 ✅ General Pattern for Modular Airflow DAGs
 
 [🔌 Import libraries]
