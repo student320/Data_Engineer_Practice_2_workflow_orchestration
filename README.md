@@ -2,14 +2,14 @@
 My Data Engineering Zoomcamp Homework 2 Solutions (using 2022 version with airflow as orchestration tool) 
 
 **Question 1.**
-Start date for the Yellow taxi data (1 point)
-You'll need to parametrize the DAG for processing the yellow taxi data that we created in the videos.
-
+Start date for the Yellow taxi data (1 point)  
+You'll need to parametrize the DAG for processing the yellow taxi data that we created in the videos.  
+  
 What should be the start date for this dag?
 
-2019-01-01
-2020-01-01
-2021-01-01
+2019-01-01  
+2020-01-01  
+2021-01-01  
 days_ago(1)
 
 
@@ -29,12 +29,12 @@ yellow_taxi_data_dag = DAG(
 ```
 
 **Qustion 2.**
-Frequency for the Yellow taxi data (1 point)
+Frequency for the Yellow taxi data (1 point)  
 How often do we need to run this DAG?
 
-Daily
-Monthly
-Yearly
+Daily  
+Monthly  
+Yearly  
 Once
 
 **Answer:**
